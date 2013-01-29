@@ -28,7 +28,7 @@ Additionally, you must set these as well:
     DROPBOX_ACCESS_TOKEN = 'xxx'
     DROPBOX_ACCESS_TOKEN_SECRET = 'xxx'
 
-## If you don't have any key/secets
+## If you don't have any key/secet
 
 If you don't have `DROPBOX_CONSUMER_KEY` or `DROPBOX_CONSUMER_SECRET`,
 you will need to create a Dropbox app at [Dropbox for Developers](https://www.dropbox.com/developers).
