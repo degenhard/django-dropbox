@@ -1,10 +1,25 @@
 from django.conf import settings
+from dictobj import MutableDictionaryObject
 
-CONSUMER_KEY = getattr(settings, 'DROPBOX_CONSUMER_KEY', None)
-CONSUMER_SECRET = getattr(settings, 'DROPBOX_CONSUMER_SECRET', None)
-ACCESS_TOKEN = getattr(settings, 'DROPBOX_ACCESS_TOKEN', None)
-ACCESS_TOKEN_SECRET = getattr(settings, 'DROPBOX_ACCESS_TOKEN_SECRET', None)
+DROPBOX_DEFAULT = {
+  """
+  A dictionary containing all the applicable dropbox settings, along with their defaults.
+  Users may override any setting in their own settings.DROPBOX.
+  """
+  
+  'app_key':None,
+  'app_secret':None,
+  'access_key':None,
+  'access_secret':None,
+  
+  # access_type should be 'dropbox' or 'app_folder' as configured for your app
+  'access_type':'dropbox',
 
-# ACCESS_TYPE should be 'dropbox' or 'app_folder' as configured for your app
-ACCESS_TYPE = 'dropbox'
+  'overwrite_mode':False,
+}
 
+# Update the default settings with our user's custom updates.
+DROPBOX_DEFAULT.update(getattr(settings.DROPBOX, 'DROPBOX', {}))
+
+# Wrap the dropbox settings into a comfortable MutableDictionaryObject.
+DROPBOX = MutableDictionaryObject(DROPBOX_DEFAULT)
