@@ -26,9 +26,7 @@ class DropboxFile(File):
 
   @property
   def size(self):
-    if not hasattr(self, '_size'):
-      self._size = self._storage.size(self._name)
-    return self._size
+    return self._storage.size(self._name)
 
   def read(self, num_bytes=None):
     return self._storage.client.get_file(self._name).read()
@@ -50,19 +48,34 @@ class DropboxFile(File):
     self.flush()
     self.file.close()
 
+def abs_path(base_dir_attr):
+  """
+  Assuming the second parameter of the callable is a path, let's prepend
+  a base directory to it.
+  """
+  def wrapper(callable):
+    def wrapped(self, *args, **kwargs):
+      args[0] = os.path.join(getattr(self, base_dir_attr), args[0])
+      return callable(self, *args, **kwargs)
+    return wrapped
+  return wrapper
+
 class DropboxStorage(Storage):
    """
    A storage class providing access to resources in a Dropbox Public folder.
    """
-   def __init__(self):
+   def __init__(self, location=None):
      session = DropboxSession(DROPBOX.app_key, DROPBOX.app_secret, DROPBOX.access_type, locale=None)
      session.set_token(DROPBOX.access_key, DROPBOX.access_secret)
      self.client = DropboxClient(session)
      self.overwrite_mode = DROPBOX.overwrite_mode
+     self._location = location
 
+   @abs_path("_location")
    def delete(self, name):
      self.client.file_delete(name)
 
+   @abs_path("_location")
    def exists(self, name):
      try:
        metadata = self.client.metadata(name, list=False)
@@ -73,6 +86,7 @@ class DropboxStorage(Storage):
        raise e 
      return True
 
+   @abs_path("_location")
    def listdir(self, name, query_filter=None):
      if query_filter is None or len(query_filter) < 3:
        metadata = self.client.metadata(name)
@@ -87,16 +101,20 @@ class DropboxStorage(Storage):
          files.append(os.path.basename(entry['path']))
      return directories, files
 
+   @abs_path("_location")
    def open(self, name, mode='rb'):
      return DropboxFile(name, self, mode)
 
+   @abs_path("_location")
    def save(self, name, content):
      metadata = self.client.put_file(name, content)
      return metadata['path']
 
+   @abs_path("_location")
    def size(self, name):
      return self.client.metadata(name, list=False)['bytes']
 
+   @abs_path("_location")
    def url(self, name):
      try:
        return self.client.share(name)['url']
@@ -105,6 +123,7 @@ class DropboxStorage(Storage):
          return None
        raise e
 
+   @abs_path("_location")
    def get_available_name(self, name):
      """
      Returns a filename that's free on the target storage system, and
@@ -130,5 +149,6 @@ class DropboxStorage(Storage):
      else:
        return name
 
+   @abs_path("_location")
    def get_valid_name(self, name):
      return name
