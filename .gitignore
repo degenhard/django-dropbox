@@ -9,4 +9,4 @@ lib/
 include/
 build/
 .Python
-local_settings.py
+*_settings.py
