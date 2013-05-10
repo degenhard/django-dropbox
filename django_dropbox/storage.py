@@ -71,11 +71,11 @@ class DropboxStorage(Storage):
      self.overwrite_mode = DROPBOX.overwrite_mode
      self._location = location
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def delete(self, name):
      self.client.file_delete(name)
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def exists(self, name):
      try:
        metadata = self.client.metadata(name, list=False)
@@ -86,7 +86,7 @@ class DropboxStorage(Storage):
        raise e 
      return True
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def listdir(self, name, query_filter=None):
      if query_filter is None or len(query_filter) < 3:
        metadata = self.client.metadata(name)
@@ -101,20 +101,20 @@ class DropboxStorage(Storage):
          files.append(os.path.basename(entry['path']))
      return directories, files
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def open(self, name, mode='rb'):
      return DropboxFile(name, self, mode)
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def save(self, name, content):
      metadata = self.client.put_file(name, content)
      return metadata['path']
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def size(self, name):
      return self.client.metadata(name, list=False)['bytes']
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def url(self, name):
      try:
        return self.client.share(name)['url']
@@ -123,7 +123,7 @@ class DropboxStorage(Storage):
          return None
        raise e
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def get_available_name(self, name):
      """
      Returns a filename that's free on the target storage system, and
@@ -149,6 +149,6 @@ class DropboxStorage(Storage):
      else:
        return name
 
-   @abs_path("_location")
+   @prepend_path_with_attr("_location")
    def get_valid_name(self, name):
      return name

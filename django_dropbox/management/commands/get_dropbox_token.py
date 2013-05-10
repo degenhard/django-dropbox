@@ -1,11 +1,11 @@
 from django.core.management.base import NoArgsCommand
 from dropbox import rest, session
-from django_dropbox.settings import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TYPE
+from django_dropbox.settings import DROPBOX
 
 class Command(NoArgsCommand):
 
     def handle_noargs(self, *args, **options):
-        sess = session.DropboxSession(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TYPE)
+        sess = session.DropboxSession(DROPBOX.app_key, DROPBOX.app_secret, DROPBOX.access_type)
         request_token = sess.obtain_request_token()
 
         url = sess.build_authorize_url(request_token)
@@ -16,5 +16,5 @@ class Command(NoArgsCommand):
         # This will fail if the user didn't visit the above URL and hit 'Allow'
         access_token = sess.obtain_access_token(request_token)
 
-        print "DROPBOX_ACCESS_TOKEN = '%s'" % access_token.key
-        print "DROPBOX_ACCESS_TOKEN_SECRET = '%s'" % access_token.secret
+        print "DROPBOX.access_token = '%s'" % access_token.key
+        print "DROPBOX.access_secret = '%s'" % access_token.secret
