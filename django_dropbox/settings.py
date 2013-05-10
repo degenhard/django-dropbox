@@ -15,6 +15,11 @@ DROPBOX_DEFAULT = {
   # access_type should be 'dropbox' or 'app_folder' as configured for your app
   'access_type':'dropbox',
 
+  # The following functionality is disabled by default.
+  #
+  # If the filename already exists, add an underscore and a number (before
+  # the file extension, if one exists) to the filename until the generated
+  # filename doesn't exist.
   'overwrite_mode':False,
 }
 
